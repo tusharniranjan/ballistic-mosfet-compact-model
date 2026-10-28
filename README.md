@@ -11,7 +11,6 @@ Based on *Essentials of MOSFETs* by Mark Lundstrom.
 | `nmos_ballistic_model.va` | The model |
 | `output_characteristics.sp` | Testbench: I<sub>D</sub> vs V<sub>DS</sub> (V<sub>GS</sub> = 0.4 to 1.0 V) |
 | `transfer_characteristics.sp` | Testbench: I<sub>D</sub> vs V<sub>GS</sub> (V<sub>DS</sub> = 0.05, 0.525, 1.0 V) |
-| `docs/` | Plots from the two testbenches |
 
 ## The model
 
