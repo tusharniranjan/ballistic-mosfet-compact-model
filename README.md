@@ -34,11 +34,11 @@ spectre transfer_characteristics.sp
 
 **Output characteristics**: current saturates quickly, reaching about 12 µA at V<sub>GS</sub> = 1 V.
 
-![Output characteristics](docs/output_characteristics.png)
+![Output characteristics](output_char.pdf)
 
 **Transfer characteristics**: clean exponential subthreshold region, smooth rollover above threshold, and a leftward shift at higher V<sub>DS</sub> (DIBL).
 
-![Transfer characteristics](docs/transfer_characteristics.png)
+![Transfer characteristics](transfer_char.pdf)
 
 ## Notes
 
