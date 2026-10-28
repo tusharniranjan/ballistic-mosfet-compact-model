@@ -1,0 +1,59 @@
+////////////////////////////////////////////////////////////////////////////
+// NMOS Ballistic Transport Compact Model :)
+// - Tushar Niranjan 
+////////////////////////////////////////////////////////////////////////////
+
+`include "constants.vams"
+`include "disciplines.vams"
+`define P_M0 9.10938356e-31 // Defining the mass of the electron
+
+module nmos_ballistic(d, g, s, b);
+
+    inout  d, g, s, b;
+    electrical d, g, s, b;
+
+    parameter real  W     = 1e-6   from (0:inf);    // Channel width [cm]
+    parameter real  Cox   = 1.5e-6 from (0:inf);    // Oxide capacitance [F/cm^2]
+    parameter real  VT0   = 0.4;                    // Threshold voltage at VDS=0 [V]
+    parameter real  delta = 0.05   from [0:inf);    // DIBL coefficient [V/V]
+    parameter real  m     = 1.2    from [1:inf);    // Subthreshold swing factor
+    parameter real  mr    = 0.19   from (0:inf);    // Effective mass ratio meff/m0
+    parameter real  Tjun  = 300    from [173:inf);  // Temperature [K]
+
+    real phit, meff, vT_inj, VT_dibl, eta, Qn, Fds, Id;
+
+    analog begin
+
+        // Thermal voltage
+        phit = `P_K * Tjun / `P_Q;
+
+        // Effective carrier mass
+        meff = mr * `P_M0;
+
+        // Thermal injection velocity [cm/s]
+        vT_inj = sqrt(2.0 * `P_K * Tjun / (`M_PI * meff)) * 100.0;
+
+        // DIBL-corrected threshold voltage
+        VT_dibl = VT0 - delta * V(d, s);
+
+        // Inversion charge density. We set the limit as exp(eta) can give out of bound errors
+        eta = (V(g, s) - VT_dibl) / (m * phit);
+        if (eta <= 40.0)
+            Qn = -Cox * m * phit * ln(1.0 + exp(eta));
+        else
+            Qn = -Cox * m * phit * eta;
+
+        // Saturation function: tanh(VDS / 2*phit). The limit is set to avoid unnecessary calculation overhead
+        if (V(d, s) / phit <= 80.0)
+            Fds = (1.0 - exp(-V(d,s) / phit)) / (1.0 + exp(-V(d,s) / phit));
+        else
+            Fds = 1.0;
+
+        // Drain current
+        Id = W * (-Qn) * vT_inj * Fds;
+
+        I(d, s) <+ Id;
+
+    end
+
+endmodule
